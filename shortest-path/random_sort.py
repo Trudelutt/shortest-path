@@ -9,16 +9,16 @@ class RandomSort:
         self.x = random.sample(range(0, 10), 10)
         for _ in range(1000):
             print(self.x)
-            print(self.sentence(self.x))
-            self.reduce_sentence()
+            print(self.penalty(self.x))
+            self.reduce_penalty()
 
-    def sentence(self, x):
+    def penalty(self, x):
         """Tells how good or bad a list is sorted.
 
         Examples
         --------
-        sentence([0, 1, 2]) = 2
-        sentence([1, 0, 2]) = 3
+        penalty([0, 1, 2]) = 2
+        penalty([1, 0, 2]) = 3
 
         Returns
         -------
@@ -27,11 +27,11 @@ class RandomSort:
         """
         return sum(map(lambda a, b: abs(a - b), x[1:], x[:-1]))
 
-    def reduce_sentence(self):
+    def reduce_penalty(self):
         """Random sort.
 
         Try at random to switch two elements.
-        If the sentence becomes lower this is a good move.
+        If the penalty becomes lower this is a good move.
         Replace previous list.
         """
         random_pos = random.sample(range(0, 10), 2)
@@ -39,7 +39,7 @@ class RandomSort:
         pos_2 = random_pos[1]
         y = list(self.x)
         y[pos_1], y[pos_2] = y[pos_2], y[pos_1]
-        if self.sentence(self.x) > self.sentence(y):
+        if self.penalty(self.x) > self.penalty(y):
             self.x = y
 
 s = RandomSort()
