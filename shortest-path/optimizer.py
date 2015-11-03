@@ -6,35 +6,37 @@ __author__ = 'estensen'
 
 class Optimizer:
     """Optimize a list by sorting it."""
-    def __init__(self, max_iterations, penalty):
+    def __init__(self, max_iterations, penalty_function):
         """Generate a random permutation of elements from 0 to 9.
 
         Parameters
         ----------
         max_iterations : Number of iterations the class will try to optimize for.
-        penalty : How good the list is sorted.
+        penalty : Function that tells how good the list is sorted.
         """
         self.x = random.sample(range(0, 10), 10)
         self.max_iterations = max_iterations
-        self.penalty = penalty
+        self.penalty_function = penalty_function
+        self.penalty_matrix = self.calculate_penalty_matrix()
         self.temperature = 100
 
+    def calculate_penalty_matrix(self):
+        """Pregenerate penalty matrix for all elements"""
+        m = [[0 for x in range(10)] for x in range(10)]
+        for i in range(10):
+            for j in range(10):
+                m[i][j] = self.penalty_function(i, j)
+        return m
+
     def total_penalty(self, x):
-        """Tells how good or bad a list is sorted.
-
-        Examples
-        --------
-        penalty([0, 1, 2]) = 2
-        penalty([1, 0, 2]) = 3
-
-        Returns
-        -------
-        Sum of the difference between elements next to eachother.
-        """
-        return sum(map(lambda a, b: abs(a - b), x[1:], x[:-1]))
-        # return sum(map(self.penalty))
-
-        # return sum(map(lambda a, b: abs(a - b), x[1:], x[:-1])) / len(x)
+        """Tells how good or bad a list is sorted."""
+        # return sum(map(lambda a, b: abs(a - b), x[1:], x[:-1]))
+        # return sum(map(self.penalty, x[1:], x[:-1]))
+        penalty = 0
+        for i in range(9):
+            penalty += self.penalty_matrix[x[i]][x[i+1]]
+        penalty += self.penalty_matrix[x[9]][x[0]]
+        return penalty
 
     def reduce_penalty(self, use_greedy):
         """Try to reduce penalty by applying one of two sorting algorithms."""
@@ -78,7 +80,10 @@ class Optimizer:
 
 
 # Testing
-o = Optimizer(10000, 0)
+def f(a, b): return abs(math.sin((a-b)/10))
+o = Optimizer(10000, f)
+# for line in o.penalty_matrix:
+#     print(line)
 o.solve(False)
 print(o.total_penalty(o.x))
 print(o.x)
